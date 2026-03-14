@@ -1,20 +1,21 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🚀 My Naija Console
 
-# Run and deploy your AI Studio app
+**The ultimate merchant dashboard for Naija kings** — AI analysis, live marketplace, social proof, order tracking, logistics & payments. Built for real Port Harcourt & Lagos hustlers.
 
-This contains everything you need to run your app locally.
+![Naija Console Preview](https://via.placeholder.com/800x400/0d0d0d/c8692c?text=My+Naija+Console)
 
-View your app in AI Studio: https://ai.studio/apps/079492d8-e738-4094-b500-8c1e5cc71454
+## ✨ Features
+- 5 smart tabs (Home • Hub • Marketplace • Social Live • Profile)
+- Gemini AI product analysis & pricing suggestions
+- Live order tracker + enquiry drawer
+- QuickView + ProductSheet + Wishlist
+- Maps & Fast Naija Search
+- PDF invoice generation
+- Dark glassmorphism Naija theme (green & gold ready)
 
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🚀 Run Locally
+```bash
+npm install
+cp .env.local.example .env.local
+# Add your GEMINI_API_KEY
+npm run dev

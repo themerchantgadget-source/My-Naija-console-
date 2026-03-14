@@ -1,6 +1,7 @@
 {
-  "name": "ai-studio-applet",
-  "version": "0.1.0",
+  "name": "my-naija-console",
+  "version": "0.2.0",
+  "description": "The ultimate merchant dashboard for Naija sophistication — AI-powered marketplace, live social proof, logistics, payments & more. Built for Port Harcourt to Lagos kings.",
   "private": true,
   "scripts": {
     "dev": "next dev",

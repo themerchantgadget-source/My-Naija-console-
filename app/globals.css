@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: var(--font-serif), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --color-merchant-bg: #0d0d0d;
+  --color-merchant-accent: #c8692c;
+  --color-merchant-glass: rgba(16, 16, 18, 0.97);
+  
+  --ease-ios-spring: cubic-bezier(0.34, 1.15, 0.64, 1);
+}
+
+@layer utilities {
+  .glass-panel {
+    background-color: var(--color-merchant-glass);
+    backdrop-filter: blur(60px) saturate(1.8);
+    -webkit-backdrop-filter: blur(60px) saturate(1.8);
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+body {
+  background-color: var(--color-merchant-bg);
+  color: #ffffff;
+  overscroll-behavior-y: none;
+}

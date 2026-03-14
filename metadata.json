@@ -1,0 +1,7 @@
+{
+  "name": "TheMerchant v9",
+  "description": "Premium curated electronics and restoration in Port Harcourt with AI and Maps integration.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

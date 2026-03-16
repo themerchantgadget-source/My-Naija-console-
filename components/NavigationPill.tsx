@@ -29,7 +29,7 @@ export default function NavigationPill() {
         transition={{ ease: [0.34, 1.15, 0.64, 1], duration: 0.5 }}
         onHoverStart={() => setIsExpanded(true)}
         onHoverEnd={() => setIsExpanded(false)}
-        onClick={() => setIsExpanded(true)}
+        onClick={() => setIsExpanded(!isExpanded)}
       >
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;

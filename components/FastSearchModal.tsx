@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useStore } from '@/store/use-store';
 import { X, Globe, Zap, ExternalLink, Loader2, Send } from 'lucide-react';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, GenerateContentResponse } from '@google/genai';
 
 interface Message {
   id: string;
@@ -64,8 +64,7 @@ export default function FastSearchModal() {
       const extractedLinks: {uri: string, title: string}[] = [];
 
       for await (const chunk of responseStream) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const c = chunk as any;
+        const c = chunk as GenerateContentResponse;
         
         if (c.text) {
           fullText += c.text;
@@ -74,9 +73,9 @@ export default function FastSearchModal() {
           ));
         }
 
-        if (c.groundingMetadata?.groundingChunks) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          c.groundingMetadata.groundingChunks.forEach((gChunk: any) => {
+        const candidate = c.candidates?.[0];
+        if (candidate?.groundingMetadata?.groundingChunks) {
+          candidate.groundingMetadata.groundingChunks.forEach((gChunk) => {
             if (gChunk.web?.uri) {
               extractedLinks.push({
                 uri: gChunk.web.uri,
@@ -111,7 +110,7 @@ export default function FastSearchModal() {
   return (
     <AnimatePresence>
       {isSearchModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+        <div key="fast-search" className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

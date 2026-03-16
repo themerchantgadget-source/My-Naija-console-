@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'motion/react';
+import Image from 'next/image';
 import { useStore, Product } from '@/store/use-store';
 import { Search, SlidersHorizontal, Eye, Heart, Star } from 'lucide-react';
+import { useDebounceValue } from 'usehooks-ts';
 
 const MOCK_INVENTORY: Product[] = [
   {
@@ -63,6 +66,8 @@ const MOCK_INVENTORY: Product[] = [
 
 export default function HubTab() {
   const { setActiveProduct, setQuickViewProduct, wishlist, addToWishlist, removeFromWishlist, reviews } = useStore();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm] = useDebounceValue(searchTerm, 300);
 
   const getAverageRating = (productId: string) => {
     const productReviews = reviews[productId];
@@ -70,6 +75,11 @@ export default function HubTab() {
     const sum = productReviews.reduce((acc, rev) => acc + rev.rating, 0);
     return (sum / productReviews.length).toFixed(1);
   };
+
+  const filteredInventory = MOCK_INVENTORY.filter((product) =>
+    product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+    product.category.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+  );
 
   return (
     <div className="w-full h-full overflow-y-auto hide-scrollbar pb-32">
@@ -82,6 +92,8 @@ export default function HubTab() {
             <input
               type="text"
               placeholder="Search inventory..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-4 text-sm font-sans focus:outline-none focus:border-[#c8692c]/50 transition-colors"
             />
           </div>
@@ -92,11 +104,16 @@ export default function HubTab() {
       </header>
 
       <div className="px-6 space-y-3">
-        {MOCK_INVENTORY.map((product, index) => {
-          const isWishlisted = wishlist.some((p) => p.id === product.id);
-          const avgRating = getAverageRating(product.id);
+        {filteredInventory.length === 0 ? (
+          <div className="text-center py-12 text-white/50 font-sans">
+            No products found matching &quot;{debouncedSearchTerm}&quot;
+          </div>
+        ) : (
+          filteredInventory.map((product, index) => {
+            const isWishlisted = wishlist.some((p) => p.id === product.id);
+            const avgRating = getAverageRating(product.id);
 
-          return (
+            return (
             <motion.div
               key={product.id}
               initial={{ opacity: 0, y: 20 }}
@@ -107,12 +124,12 @@ export default function HubTab() {
               onClick={() => setActiveProduct(product)}
             >
               <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 relative">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
+                  fill
+                  className="object-cover"
+                  sizes="4rem"
                 />
               </div>
               
@@ -159,8 +176,9 @@ export default function HubTab() {
                 </button>
               </div>
             </motion.div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </div>
   );

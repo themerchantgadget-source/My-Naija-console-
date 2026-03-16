@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence, useAnimation, useDragControls } from 'motion/react';
 import { X, Check, Plus, Heart, Star, MessageSquare } from 'lucide-react';
 import { useStore, ProductVariant } from '@/store/use-store';
@@ -61,7 +62,7 @@ export default function ProductSheet() {
   return (
     <AnimatePresence>
       {activeProduct && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none">
+        <div key="product-sheet" className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -128,11 +129,12 @@ export default function ProductSheet() {
               </div>
 
               <div className="aspect-video w-full bg-white/5 rounded-2xl mb-8 overflow-hidden relative">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={activeProduct.image}
                   alt={activeProduct.name}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 42rem"
                 />
               </div>
 

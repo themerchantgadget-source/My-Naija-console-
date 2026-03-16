@@ -42,6 +42,7 @@ interface AppState {
   enquiry: EnquiryItem[];
   addToEnquiry: (product: Product, variant: ProductVariant) => void;
   removeFromEnquiry: (variantId: string) => void;
+  updateEnquiryQuantity: (variantId: string, quantity: number) => void;
   clearEnquiry: () => void;
   
   activeProduct: Product | null;
@@ -80,6 +81,14 @@ interface AppState {
 
   userPreferences: string[];
   setUserPreferences: (prefs: string[]) => void;
+  userProfile: { name: string; email: string; phone: string; avatar?: string };
+  updateUserProfile: (profile: Partial<{ name: string; email: string; phone: string; avatar?: string }>) => void;
+
+  isSettingsModalOpen: boolean;
+  setSettingsModalOpen: (isOpen: boolean) => void;
+
+  clearViewedProducts: () => void;
+  clearWishlist: () => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -102,6 +111,13 @@ export const useStore = create<AppState>((set) => ({
   }),
   removeFromEnquiry: (variantId) => set((state) => ({
     enquiry: state.enquiry.filter((item) => item.variant.id !== variantId),
+  })),
+  updateEnquiryQuantity: (variantId, quantity) => set((state) => ({
+    enquiry: state.enquiry.map((item) =>
+      item.variant.id === variantId
+        ? { ...item, quantity: Math.max(1, quantity) }
+        : item
+    ),
   })),
   clearEnquiry: () => set({ enquiry: [] }),
   
@@ -160,4 +176,13 @@ export const useStore = create<AppState>((set) => ({
 
   userPreferences: ['Gaming', 'Tech Gadgets', 'Streetwear'],
   setUserPreferences: (prefs) => set({ userPreferences: prefs }),
+
+  userProfile: { name: 'Maro E.', email: 'maro@example.com', phone: '+234 800 000 0000' },
+  updateUserProfile: (profile) => set((state) => ({ userProfile: { ...state.userProfile, ...profile } })),
+
+  isSettingsModalOpen: false,
+  setSettingsModalOpen: (isOpen) => set({ isSettingsModalOpen: isOpen }),
+
+  clearViewedProducts: () => set({ viewedProducts: [] }),
+  clearWishlist: () => set({ wishlist: [] }),
 }));

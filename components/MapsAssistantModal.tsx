@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useStore } from '@/store/use-store';
 import { X, MapPin, Sparkles, Loader2, ExternalLink, Navigation } from 'lucide-react';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, GenerateContentParameters } from '@google/genai';
 import Markdown from 'react-markdown';
 
 export default function MapsAssistantModal() {
@@ -50,8 +50,7 @@ export default function MapsAssistantModal() {
         }
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const config: any = {
+      const config: GenerateContentParameters['config'] = {
         tools: [{ googleMaps: {} }],
       };
 
@@ -72,13 +71,11 @@ export default function MapsAssistantModal() {
       setResult(response.text || 'No information found.');
       
       // Extract URLs from grounding metadata
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const chunks = (response.candidates?.[0]?.groundingMetadata as any)?.groundingChunks;
+      const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
       const extractedLinks: {uri: string, title: string}[] = [];
       
       if (chunks) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        chunks.forEach((chunk: any) => {
+        chunks.forEach((chunk) => {
           if (chunk.maps?.uri) {
             extractedLinks.push({
               uri: chunk.maps.uri,
@@ -103,7 +100,7 @@ export default function MapsAssistantModal() {
   return (
     <AnimatePresence>
       {isMapsModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+        <div key="maps-modal" className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

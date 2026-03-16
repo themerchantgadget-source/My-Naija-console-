@@ -83,7 +83,7 @@ export default function AiAnalysisModal() {
   return (
     <AnimatePresence>
       {isAiModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+        <div key="ai-modal" className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

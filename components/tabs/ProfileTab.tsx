@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
+import Image from 'next/image';
 import { useStore } from '@/store/use-store';
 import { User, Package, Map, Settings, LogOut, ChevronRight, Heart, Sparkles, Github, Trash2, Plus, Navigation } from 'lucide-react';
 
@@ -15,30 +16,45 @@ const DELIVERY_ZONES = [
 ];
 
 export default function ProfileTab() {
-  const { setOrderTrackerOpen, wishlist, removeFromWishlist, addToEnquiry, setAiModalOpen, setMapsModalOpen, setSearchModalOpen } = useStore();
+  const { setOrderTrackerOpen, wishlist, removeFromWishlist, addToEnquiry, setAiModalOpen, setMapsModalOpen, setSearchModalOpen, userProfile, setSettingsModalOpen } = useStore();
 
   const handlePublishToGithub = () => {
     alert("Ready for deployment. Use the AI Studio 'Export to GitHub' feature in the top right menu to publish this codebase.");
+  };
+
+  const getInitials = (name: string) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   };
 
   return (
     <div className="w-full h-full overflow-y-auto hide-scrollbar pb-32">
       <header className="px-6 pt-16 pb-8 border-b border-white/10">
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
-            <User size={32} />
+          <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 overflow-hidden border border-white/10 relative">
+            {userProfile.avatar ? (
+              <Image src={userProfile.avatar} alt={userProfile.name} fill className="object-cover" sizes="4rem" />
+            ) : (
+              <span className="font-serif text-2xl">{getInitials(userProfile.name)}</span>
+            )}
           </div>
           <div>
-            <h1 className="font-serif text-3xl">Maro E.</h1>
-            <p className="font-mono text-sm text-white/50">maro@example.com</p>
+            <h1 className="font-serif text-3xl">{userProfile.name}</h1>
+            <p className="font-mono text-sm text-white/50">{userProfile.email}</p>
           </div>
         </div>
         
         <div className="flex gap-3">
-          <button className="flex-1 bg-white/5 border border-white/10 py-2 rounded-full font-sans text-sm font-medium hover:bg-white/10 transition-colors">
+          <button 
+            onClick={() => setSettingsModalOpen(true)}
+            className="flex-1 bg-white/5 border border-white/10 py-2 rounded-full font-sans text-sm font-medium hover:bg-white/10 transition-colors"
+          >
             Edit Profile
           </button>
-          <button className="w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+          <button 
+            onClick={() => setSettingsModalOpen(true)}
+            className="w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
+          >
             <Settings size={18} />
           </button>
         </div>
@@ -137,9 +153,8 @@ export default function ProfileTab() {
                   transition={{ delay: index * 0.05 }}
                   className="glass-panel p-3 rounded-2xl border border-white/10 flex items-center gap-4"
                 >
-                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0 relative">
+                    <Image src={product.image} alt={product.name} fill className="object-cover" sizes="3rem" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-serif text-lg truncate">{product.name}</h4>

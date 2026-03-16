@@ -52,13 +52,11 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={`${inter.variable} ${instrumentSerif.variable} ${dmMono.variable}`} suppressHydrationWarning>
-      <head>
+      <body className="font-sans bg-[#0d0d0d] text-white antialiased selection:bg-[#c8692c] selection:text-white" suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-      </head>
-      <body className="font-sans bg-[#0d0d0d] text-white antialiased selection:bg-[#c8692c] selection:text-white" suppressHydrationWarning>
         {children}
       </body>
     </html>

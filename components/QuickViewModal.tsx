@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Plus, Check } from 'lucide-react';
 import { useStore } from '@/store/use-store';
@@ -17,7 +18,7 @@ export default function QuickViewModal() {
   return (
     <AnimatePresence>
       {quickViewProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+        <div key="quick-view" className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -41,11 +42,12 @@ export default function QuickViewModal() {
             </button>
 
             <div className="aspect-square w-full bg-white/5 rounded-2xl mb-6 overflow-hidden relative">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={quickViewProduct.image}
                 alt={quickViewProduct.name}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 24rem"
               />
             </div>
 

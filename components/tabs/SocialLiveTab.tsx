@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
+import Image from 'next/image';
 import { Heart, MessageCircle, ExternalLink, Twitter, Facebook, Video } from 'lucide-react';
 
 const MOCK_POSTS = [
@@ -85,13 +86,13 @@ export default function SocialLiveTab() {
             </p>
 
             {post.image && (
-              <div className="w-full bg-[#1a1a1a]/5 rounded-xl overflow-hidden mb-6 border border-[#1a1a1a]/10">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <div className="w-full bg-[#1a1a1a]/5 rounded-xl overflow-hidden mb-6 border border-[#1a1a1a]/10 relative aspect-[4/3]">
+                <Image
                   src={post.image}
                   alt="Post attachment"
-                  className="w-full h-auto object-cover"
-                  loading="lazy"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 42rem"
                 />
               </div>
             )}

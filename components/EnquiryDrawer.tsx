@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Trash2, CreditCard, FileText } from 'lucide-react';
 import { useStore } from '@/store/use-store';
 import jsPDF from 'jspdf';
 
 export default function EnquiryDrawer() {
-  const { isEnquiryDrawerOpen, setEnquiryDrawerOpen, enquiry, removeFromEnquiry, clearEnquiry, setOrderTrackerOpen, setHasPaid } = useStore();
+  const { isEnquiryDrawerOpen, setEnquiryDrawerOpen, enquiry, removeFromEnquiry, updateEnquiryQuantity, clearEnquiry, setOrderTrackerOpen, setHasPaid } = useStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
@@ -85,7 +86,7 @@ export default function EnquiryDrawer() {
   return (
     <AnimatePresence>
       {isEnquiryDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end pointer-events-none">
+        <div key="enquiry-drawer" className="fixed inset-0 z-50 flex justify-end pointer-events-none">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -122,9 +123,8 @@ export default function EnquiryDrawer() {
                 <div className="space-y-4">
                   {enquiry.map((item) => (
                     <div key={item.variant.id} className="flex gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
-                      <div className="w-20 h-20 rounded-xl bg-white/5 overflow-hidden shrink-0">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                      <div className="w-20 h-20 rounded-xl bg-white/5 overflow-hidden shrink-0 relative">
+                        <Image src={item.product.image} alt={item.product.name} fill className="object-cover" sizes="5rem" />
                       </div>
                       <div className="flex-1 flex flex-col justify-between">
                         <div>
@@ -133,13 +133,32 @@ export default function EnquiryDrawer() {
                         </div>
                         <div className="flex justify-between items-end">
                           <p className="font-mono text-sm font-medium">₦{item.variant.price.toLocaleString()}</p>
-                          <button
-                            onClick={() => removeFromEnquiry(item.variant.id)}
-                            disabled={isProcessing}
-                            className="text-red-400 hover:text-red-300 transition-colors disabled:opacity-50"
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-1 bg-white/5 rounded-lg p-1 border border-white/10">
+                              <button
+                                onClick={() => updateEnquiryQuantity(item.variant.id, item.quantity - 1)}
+                                disabled={isProcessing || item.quantity <= 1}
+                                className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 disabled:opacity-50 transition-colors text-white/70"
+                              >
+                                -
+                              </button>
+                              <span className="font-mono text-xs w-6 text-center">{item.quantity}</span>
+                              <button
+                                onClick={() => updateEnquiryQuantity(item.variant.id, item.quantity + 1)}
+                                disabled={isProcessing}
+                                className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 disabled:opacity-50 transition-colors text-white/70"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <button
+                              onClick={() => removeFromEnquiry(item.variant.id)}
+                              disabled={isProcessing}
+                              className="text-red-400 hover:text-red-300 transition-colors disabled:opacity-50 p-1"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

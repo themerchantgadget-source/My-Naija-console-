@@ -10,7 +10,7 @@ export default function OrderTracker() {
   return (
     <AnimatePresence>
       {isOrderTrackerOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <div key="order-tracker" className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

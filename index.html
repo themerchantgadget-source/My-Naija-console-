@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Naija Console — The sovereign marketplace for Port Harcourt and Rivers State. Buy, sell, bid, and trade with escrow protection and AI Price Scout.">
+  <meta property="og:title" content="Naija Console — Sovereign Marketplace">
+  <meta property="og:description" content="xAI-powered marketplace for Rivers State. Hyper-local zones, live bidding, escrow protection, and AI Price Scout.">
+  <meta name="theme-color" content="#000000">
+  <title>Naija Console — Sovereign Marketplace</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23000'/><text y='.9em' font-size='80' x='10'>🛍️</text></svg>">
+</head>
+<body>
+
+<!-- ─── App Shell ──────────────────────────────────────────────────────────── -->
+<div class="app-shell">
+
+  <!-- FX Ticker -->
+  <div class="fx-ticker">
+    <div class="fx-ticker-inner" id="fx-ticker-inner"></div>
+  </div>
+
+  <!-- Top Nav -->
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <div class="brand" onclick="navigate('feed')" style="cursor:pointer">
+        <div class="brand-dot"></div>
+        NAIJA CONSOLE
+      </div>
+
+      <div class="nav-search">
+        <span class="nav-search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search listings, sellers, zones…">
+      </div>
+
+      <div class="nav-actions">
+        <button class="nav-btn" onclick="openModal('notif-modal')" title="Notifications">
+          🔔
+          <span class="nav-badge" id="notif-badge" style="display:flex">3</span>
+        </button>
+        <button class="nav-btn" onclick="openCart()" title="Cart">
+          🛒
+          <span class="nav-badge" id="cart-badge">0</span>
+        </button>
+        <img class="nav-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&fit=crop" alt="Profile" onclick="navigate('profile')">
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="sidebar-link active" data-page="feed" onclick="navigate('feed')">
+          <span class="sidebar-link-icon">🏠</span> Feed
+        </div>
+        <div class="sidebar-link" data-page="explore" onclick="navigate('explore')">
+          <span class="sidebar-link-icon">🔭</span> Explore
+        </div>
+        <div class="sidebar-link" data-page="notifications" onclick="navigate('notifications')">
+          <span class="sidebar-link-icon">🔔</span> Activity
+        </div>
+        <div class="sidebar-link" data-page="profile" onclick="navigate('profile')">
+          <span class="sidebar-link-icon">👤</span> Profile
+        </div>
+        <div class="sidebar-link" onclick="openModal('reels-modal')">
+          <span class="sidebar-link-icon">🎬</span> Reels
+        </div>
+        <div class="sidebar-link" onclick="openModal('live-modal')">
+          <span class="sidebar-link-icon">🔴</span> Live
+        </div>
+        <div class="sidebar-link" onclick="openModal('groups-modal')">
+          <span class="sidebar-link-icon">👥</span> Groups
+        </div>
+        <div class="sidebar-link" onclick="openModal('dashboard-modal')">
+          <span class="sidebar-link-icon">📊</span> Dashboard
+        </div>
+        <div class="sidebar-link" onclick="openModal('verify-modal')">
+          <span class="sidebar-link-icon">🛡️</span> Verify
+        </div>
+        <div class="sidebar-link" onclick="openModal('wishlist-modal')">
+          <span class="sidebar-link-icon">❤️</span> Wishlist
+        </div>
+      </nav>
+
+      <button class="sidebar-post-btn" onclick="openModal('create-listing-modal')">
+        ✦ Post Listing
+      </button>
+    </aside>
+
+    <!-- Feed Column -->
+    <main class="feed-col">
+
+      <!-- Feed Page -->
+      <div class="page-view active" id="page-feed">
+        <div id="feature-row" class="feature-row"></div>
+        <div id="stories-row" class="stories-row"></div>
+        <div class="section-divider"></div>
+        <div id="zone-bar" class="zone-bar"></div>
+        <div id="cat-bar-feed" class="cat-bar"></div>
+        <div id="feed-container"></div>
+      </div>
+
+      <!-- Explore Page -->
+      <div class="page-view" id="page-explore">
+        <div style="padding:12px 0 8px">
+          <div class="nav-search" style="max-width:100%">
+            <span class="nav-search-icon">🔍</span>
+            <input type="text" placeholder="Search listings…" oninput="handleSearch(this.value)"
+              style="width:100%;background:var(--void-3);border:1px solid var(--border);border-radius:24px;padding:10px 16px 10px 40px;color:var(--white);font-size:14px;outline:none">
+          </div>
+        </div>
+        <div id="cat-bar-explore" class="cat-bar"></div>
+        <div id="explore-grid" class="explore-grid"></div>
+      </div>
+
+      <!-- Notifications Page -->
+      <div class="page-view" id="page-notifications">
+        <div style="padding:16px 0 8px;font-size:20px;font-weight:800;color:var(--white)">Activity</div>
+        <div id="notif-list"></div>
+      </div>
+
+      <!-- Profile Page -->
+      <div class="page-view" id="page-profile">
+        <div style="position:relative;margin-bottom:60px">
+          <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&fit=crop"
+            alt="Cover" style="width:100%;height:140px;object-fit:cover;border-radius:var(--radius-lg)">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&fit=crop"
+            alt="Avatar" style="width:72px;height:72px;border-radius:50%;border:3px solid var(--void);position:absolute;bottom:-36px;left:16px;object-fit:cover">
+        </div>
+        <div style="padding:0 16px 16px">
+          <div style="font-size:20px;font-weight:800;color:var(--white);display:flex;align-items:center;gap:8px">
+            Maro Sovereign <span class="verified-badge" style="width:20px;height:20px;font-size:11px">✓</span>
+          </div>
+          <div style="font-size:14px;color:var(--white-40);margin-bottom:8px">@maro · Port Harcourt, Rivers State</div>
+          <div style="font-size:14px;color:var(--white-60);margin-bottom:16px">Sovereign trader. Rivers State. Understanding every deal.</div>
+
+          <!-- Trust Score -->
+          <div style="background:var(--void-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <span style="font-size:13px;font-weight:600;color:var(--white)">Trust Score</span>
+              <span style="font-size:16px;font-weight:900;color:var(--cyan)">98%</span>
+            </div>
+            <div style="height:4px;background:var(--void-3);border-radius:2px;overflow:hidden">
+              <div style="height:100%;width:98%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:2px"></div>
+            </div>
+            <div style="font-size:12px;color:var(--white-40);margin-top:4px">BVN Verified · CAC Verified · 47 Sales</div>
+          </div>
+
+          <!-- Stats -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+            <div style="text-align:center;background:var(--void-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 8px">
+              <div style="font-size:18px;font-weight:900;color:var(--white)">12</div>
+              <div style="font-size:11px;color:var(--white-40)">Listings</div>
+            </div>
+            <div style="text-align:center;background:var(--void-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 8px">
+              <div style="font-size:18px;font-weight:900;color:var(--white)">47</div>
+              <div style="font-size:11px;color:var(--white-40)">Sales</div>
+            </div>
+            <div style="text-align:center;background:var(--void-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 8px">
+              <div style="font-size:18px;font-weight:900;color:var(--cyan)">1.2K</div>
+              <div style="font-size:11px;color:var(--white-40)">Followers</div>
+            </div>
+            <div style="text-align:center;background:var(--void-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 8px">
+              <div style="font-size:18px;font-weight:900;color:var(--white)">89</div>
+              <div style="font-size:11px;color:var(--white-40)">Following</div>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+            ${[
+              {icon:'📦',label:'Orders',action:"openModal('orders-modal')"},
+              {icon:'💬',label:'Messages',action:"openModal('chat-modal')"},
+              {icon:'🛡️',label:'Verify',action:"openModal('verify-modal')"},
+              {icon:'❤️',label:'Wishlist',action:"openModal('wishlist-modal')"},
+              {icon:'📊',label:'Dashboard',action:"openModal('dashboard-modal')"},
+              {icon:'⭐',label:'Reviews',action:"openModal('reviews-modal')"},
+              {icon:'🚨',label:'Dispute',action:"openModal('dispute-modal')"},
+              {icon:'👥',label:'Groups',action:"openModal('groups-modal')"},
+            ].map(l => `
+              <button onclick="${l.action}" style="background:var(--void-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all 0.2s">
+                <span style="font-size:20px">${l.icon}</span>
+                <span style="font-size:11px;color:var(--white-60)">${l.label}</span>
+              </button>`).join('')}
+          </div>
+
+          <button class="sidebar-post-btn" onclick="openModal('create-listing-modal')">✦ Post New Listing</button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Right Column -->
+    <aside class="right-col">
+
+      <!-- Who to Follow -->
+      <div class="widget">
+        <div class="widget-title">Who to Follow</div>
+        <div id="who-to-follow">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Trending Zones -->
+      <div class="widget">
+        <div class="widget-title">🔥 Trending Zones</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--white)">Trans-Amadi</div>
+              <div style="font-size:12px;color:var(--white-40)">Electronics · 142 listings</div>
+            </div>
+            <span style="font-size:12px;color:var(--cyan);font-weight:600">↑ 23%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--white)">GRA Phase 1 & 2</div>
+              <div style="font-size:12px;color:var(--white-40)">Fashion · 98 listings</div>
+            </div>
+            <span style="font-size:12px;color:var(--cyan);font-weight:600">↑ 18%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--white)">D/Line</div>
+              <div style="font-size:12px;color:var(--white-40)">Home · 67 listings</div>
+            </div>
+            <span style="font-size:12px;color:var(--green);font-weight:600">↑ 11%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- xAI Price Scout -->
+      <div class="widget" style="border-color:var(--border-glow)">
+        <div class="widget-title" style="color:var(--cyan)">⚡ xAI Price Scout</div>
+        <div style="font-size:13px;color:var(--white-60);line-height:1.6">
+          AI-powered deal intelligence. Every listing is analysed against real market data in your zone. Look for the <strong style="color:var(--green)">Excellent</strong> badge for the best deals.
+        </div>
+        <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px">
+            <span class="price-scout-badge excellent" style="font-size:11px">⚡ Excellent</span>
+            <span style="color:var(--white-60)">Below market value</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px">
+            <span class="price-scout-badge fair" style="font-size:11px">⚡ Fair</span>
+            <span style="color:var(--white-60)">Within market range</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px">
+            <span class="price-scout-badge overpriced" style="font-size:11px">⚡ Overpriced</span>
+            <span style="color:var(--white-60)">Above market value</span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div><!-- /main-layout -->
+
+  <!-- Bottom Nav (Mobile) -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <div class="bottom-nav-item active" data-page="feed" onclick="navigate('feed')">
+        <span class="bottom-nav-icon">🏠</span>
+        <span class="bottom-nav-label">Feed</span>
+      </div>
+      <div class="bottom-nav-item" data-page="explore" onclick="navigate('explore')">
+        <span class="bottom-nav-icon">🔭</span>
+        <span class="bottom-nav-label">Explore</span>
+      </div>
+      <div class="bottom-nav-item" onclick="openModal('create-listing-modal')">
+        <div class="bottom-post-btn">✦</div>
+      </div>
+      <div class="bottom-nav-item" data-page="notifications" onclick="navigate('notifications')">
+        <span class="bottom-nav-icon">🔔</span>
+        <span class="bottom-nav-label">Activity</span>
+      </div>
+      <div class="bottom-nav-item" data-page="profile" onclick="navigate('profile')">
+        <span class="bottom-nav-icon">👤</span>
+        <span class="bottom-nav-label">Profile</span>
+      </div>
+    </div>
+  </nav>
+
+</div><!-- /app-shell -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- MODALS                                                                     -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- Listing Detail -->
+<div class="modal-overlay" id="listing-detail-modal">
+  <div class="modal listing-detail-modal">
+    <div class="modal-header">
+      <span class="modal-title"></span>
+      <button class="modal-close" onclick="closeModal('listing-detail-modal')">✕</button>
+    </div>
+    <div class="modal-body"></div>
+  </div>
+</div>
+
+<!-- Cart -->
+<div class="modal-overlay" id="cart-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🛒 Cart</span>
+      <button class="modal-close" onclick="closeModal('cart-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="cart-items"></div>
+      <div class="cart-total-row" id="cart-total-row" style="display:none">
+        <span class="cart-total-label">Total (+ ₦1,500 delivery)</span>
+        <span class="cart-total-value" id="cart-total-value">₦0</span>
+      </div>
+      <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Checkout -->
+<div class="modal-overlay" id="checkout-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🔒 Secure Checkout</span>
+      <button class="modal-close" onclick="closeModal('checkout-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--green-dim);border:1px solid rgba(0,200,83,0.3);border-radius:var(--radius);padding:12px 14px;margin-bottom:20px;font-size:13px;color:var(--green)">
+        🔒 <strong>Escrow Protection Active</strong> — Your payment is held safely until you confirm delivery.
+      </div>
+      <form id="checkout-form">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-input" type="text" placeholder="Maro Sovereign" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input class="form-input" type="tel" placeholder="+234 800 000 0000" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Delivery Address</label>
+          <textarea class="form-textarea" placeholder="House number, street, area, Port Harcourt" required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Zone</label>
+          <select class="form-select" required>
+            <option value="">Select zone</option>
+            <option>Port Harcourt CBD</option>
+            <option>GRA Phase 1 & 2</option>
+            <option>Trans-Amadi</option>
+            <option>D/Line</option>
+            <option>Choba / UniPort</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Payment Method</label>
+          <select class="form-select" required>
+            <option>Bank Transfer (Escrow)</option>
+            <option>Card Payment (Escrow)</option>
+            <option>Cash on Delivery</option>
+          </select>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--border);margin-top:8px">
+          <span style="font-size:14px;color:var(--white-60)">Order Total</span>
+          <span style="font-size:22px;font-weight:900;color:var(--white)" id="checkout-total">₦0</span>
+        </div>
+        <button type="submit" class="submit-btn">🔒 Place Order — Escrow Protected</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Order Success -->
+<div class="modal-overlay" id="order-success-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Order Placed</span>
+      <button class="modal-close" onclick="closeModal('order-success-modal')">✕</button>
+    </div>
+    <div class="modal-body" style="text-align:center;padding:40px 24px">
+      <div style="font-size:64px;margin-bottom:16px">🎉</div>
+      <div style="font-size:22px;font-weight:900;color:var(--white);margin-bottom:8px">Order Confirmed!</div>
+      <div style="font-size:14px;color:var(--white-60);line-height:1.6;margin-bottom:24px">
+        Your payment is held in <strong style="color:var(--green)">Escrow</strong>. A dedicated rider has been assigned. Track your delivery in real time.
+      </div>
+      <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:24px;text-align:left">
+        <div style="font-size:13px;font-weight:700;color:var(--cyan);margin-bottom:10px">🏍️ Rider Assigned</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&fit=crop" alt="Rider" style="width:44px;height:44px;border-radius:50%;object-fit:cover">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--white)">Chukwudi Obi</div>
+            <div style="font-size:12px;color:var(--white-40)">⭐ 4.9 · 1,247 trips · RSH 234 KJ</div>
+          </div>
+          <div style="margin-left:auto;font-size:13px;font-weight:600;color:var(--green)">ETA 25 min</div>
+        </div>
+      </div>
+      <button class="checkout-btn" onclick="closeModal('order-success-modal')">Track Delivery →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Listing -->
+<div class="modal-overlay" id="create-listing-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">✦ Post a Listing</span>
+      <button class="modal-close" onclick="closeModal('create-listing-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="create-listing-form">
+        <div class="form-group">
+          <label class="form-label">Title *</label>
+          <input class="form-input" id="new-title" type="text" placeholder="e.g. iPhone 14 Pro 256GB Space Black" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Price (₦) *</label>
+            <input class="form-input" id="new-price" type="number" placeholder="0" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Listing Type</label>
+            <select class="form-select" id="new-type">
+              <option value="fixed">Fixed Price</option>
+              <option value="auction">Live Auction</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select class="form-select" id="new-category">
+              <option>Fashion</option>
+              <option>Electronics</option>
+              <option>Home</option>
+              <option>Sports</option>
+              <option>Art</option>
+              <option>Books</option>
+              <option>Vehicles</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Condition</label>
+            <select class="form-select" id="new-condition">
+              <option>New</option>
+              <option>Like New</option>
+              <option>Good</option>
+              <option>Fair</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Zone</label>
+          <select class="form-select" id="new-zone">
+            <option>Port Harcourt CBD</option>
+            <option>GRA Phase 1 & 2</option>
+            <option>Trans-Amadi</option>
+            <option>D/Line</option>
+            <option>Choba / UniPort</option>
+            <option>Rumuola / Rumuokoro</option>
+            <option>Eleme / Oyigbo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description *</label>
+          <textarea class="form-textarea" id="new-desc" placeholder="Describe your item — condition, size, accessories included, pickup/delivery options…" required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">✦ Post Listing</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Notifications -->
+<div class="modal-overlay" id="notif-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🔔 Activity</span>
+      <button class="modal-close" onclick="closeModal('notif-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="notif-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Wishlist -->
+<div class="modal-overlay" id="wishlist-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">❤️ Wishlist</span>
+      <button class="modal-close" onclick="closeModal('wishlist-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="wishlist-items"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Reels -->
+<div class="modal-overlay" id="reels-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🎬 Shoppable Reels</span>
+      <button class="modal-close" onclick="closeModal('reels-modal')">✕</button>
+    </div>
+      <div class="modal-body" id="reels-modal-body"></div>
+  </div>
+</div>
+
+<!-- Live Stream -->
+<div class="modal-overlay" id="live-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🔴 Live Shopping</span>
+      <button class="modal-close" onclick="closeModal('live-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px">
+        <div style="position:relative">
+          <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&fit=crop" alt="Live" style="width:100%;height:220px;object-fit:cover">
+          <div style="position:absolute;top:10px;left:10px;background:var(--red);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;color:var(--white);display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;background:white;border-radius:50%;animation:pulse 1s infinite"></span>LIVE</div>
+          <div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.7);border-radius:8px;padding:4px 10px;font-size:12px;color:var(--white)">👁 2,341 watching</div>
+        </div>
+        <div style="padding:14px">
+          <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px">Emeka Nwosu — Tech Deals Live</div>
+          <div style="font-size:13px;color:var(--white-40);margin-bottom:12px">Trans-Amadi · Started 23 min ago</div>
+          <div style="background:var(--void-2);border:1px solid var(--amber);border-radius:var(--radius);padding:12px;margin-bottom:12px">
+            <div style="font-size:12px;color:var(--amber);font-weight:700;margin-bottom:4px">📌 PINNED PRODUCT</div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:14px;font-weight:700;color:var(--white)">iPhone 14 Pro 256GB</div>
+              <div style="font-size:16px;font-weight:900;color:var(--cyan)">₦420,000</div>
+            </div>
+          </div>
+          <button class="checkout-btn" onclick="addToCart('l2');showToast('iPhone 14 Pro added to cart','🛒');closeModal('live-modal')">⚡ Instant Buy — ₦420,000</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Groups -->
+<div class="modal-overlay" id="groups-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">👥 Community Groups</span>
+      <button class="modal-close" onclick="closeModal('groups-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="groups-modal-body"></div>
+  </div>
+</div>
+
+<!-- Seller Dashboard -->
+<div class="modal-overlay" id="dashboard-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📊 Seller Dashboard</span>
+      <button class="modal-close" onclick="closeModal('dashboard-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="dashboard-modal-body"><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px">
+        <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:14px"><div style="font-size:22px;margin-bottom:6px">💰</div><div style="font-size:20px;font-weight:900;color:var(--cyan)">₦2.4M</div><div style="font-size:12px;color:var(--white-40)">Total Sales</div></div>
+        <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:14px"><div style="font-size:22px;margin-bottom:6px">📦</div><div style="font-size:20px;font-weight:900;color:var(--white)">12</div><div style="font-size:12px;color:var(--white-40)">Active Listings</div></div>
+        <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:14px"><div style="font-size:22px;margin-bottom:6px">⭐</div><div style="font-size:20px;font-weight:900;color:var(--gold)">4.9 ⭐</div><div style="font-size:12px;color:var(--white-40)">Avg Rating</div></div>
+        <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:14px"><div style="font-size:22px;margin-bottom:6px">📈</div><div style="font-size:20px;font-weight:900;color:var(--green)">34%</div><div style="font-size:12px;color:var(--white-40)">Conversion</div></div>
+      </div>
+      <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:16px">
+        <div style="font-size:14px;font-weight:700;color:var(--white);margin-bottom:10px">⚡ xAI Pricing Suggestions</div>
+        <div style="font-size:13px;color:var(--white-60);line-height:1.6">
+          Your Ankara Dress is priced <strong style="color:var(--green)">12% below market</strong>. Consider raising to ₦9,500 for maximum profit while staying competitive.<br><br>
+          Your iPhone listing is in the <strong style="color:var(--amber)">top 15%</strong> of Trans-Amadi electronics. Current bid trajectory suggests final sale at ₦415,000.
+        </div>
+      </div>
+      <div style="background:var(--cyan-dim);border:1px solid var(--border-glow);border-radius:var(--radius);padding:14px">
+        <div style="font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:6px">👑 Sovereign Seller — Premium</div>
+        <div style="font-size:13px;color:var(--white-60);margin-bottom:10px">Unlock boosted listings, priority escrow, and affiliate commissions.</div>
+        <button class="checkout-btn" style="margin-top:0" onclick="showToast('Sovereign Premium activated!','👑')">Upgrade — ₦5,000/month</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Verify -->
+<div class="modal-overlay" id="verify-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🛡️ Sovereign Verification</span>
+      <button class="modal-close" onclick="closeModal('verify-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;padding:16px 0 24px">
+        <div style="font-size:48px;margin-bottom:12px">🛡️</div>
+        <div style="font-size:17px;font-weight:800;color:var(--white);margin-bottom:8px">Get Verified — Build Trust</div>
+        <div style="font-size:14px;color:var(--white-60);line-height:1.6">Verified sellers get 3x more buyers, escrow priority, and the sovereign shield badge.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+        <div style="background:var(--green-dim);border:1px solid rgba(0,200,83,0.3);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">✅</span>
+          <div><div style="font-size:14px;font-weight:700;color:var(--white)">BVN Verified</div><div style="font-size:12px;color:var(--green)">Identity confirmed</div></div>
+        </div>
+        <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px">
+          <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:8px">CAC Registration Number</div>
+          <input class="form-input" type="text" placeholder="e.g. RC-1234567">
+        </div>
+        <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px">
+          <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:8px">Bank Account (for escrow payouts)</div>
+          <input class="form-input" type="text" placeholder="Account number" style="margin-bottom:8px">
+          <select class="form-select"><option>First Bank</option><option>GTBank</option><option>Access Bank</option><option>Zenith Bank</option><option>UBA</option></select>
+        </div>
+      </div>
+      <button class="submit-btn" onclick="showToast('Verification submitted! Review in 24h','🛡️');closeModal('verify-modal')">Submit for Verification</button>
+    </div>
+  </div>
+</div>
+
+<!-- Dispute Center -->
+<div class="modal-overlay" id="dispute-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🚨 Dispute Center</span>
+      <button class="modal-close" onclick="closeModal('dispute-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--red-dim);border:1px solid rgba(255,59,48,0.3);border-radius:var(--radius);padding:12px 14px;margin-bottom:20px;font-size:13px;color:var(--red)">
+        🔒 Buyer Protection Active — Escrow funds are frozen until dispute is resolved.
+      </div>
+      <div class="form-group">
+        <label class="form-label">Order Reference</label>
+        <input class="form-input" type="text" placeholder="e.g. ORD-20240315-001">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Issue Type</label>
+        <select class="form-select">
+          <option>Item not received</option>
+          <option>Item not as described</option>
+          <option>Counterfeit / fake item</option>
+          <option>Seller unresponsive</option>
+          <option>Wrong item delivered</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" placeholder="Describe the issue in detail…"></textarea>
+      </div>
+      <button class="submit-btn" style="background:var(--red)" onclick="showToast('Dispute filed. Escrow held. We will resolve in 48h.','🚨');closeModal('dispute-modal')">File Dispute</button>
+    </div>
+  </div>
+</div>
+
+<!-- AR Try-On -->
+<div class="modal-overlay" id="ar-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🪞 AR Virtual Try-On</span>
+      <button class="modal-close" onclick="closeModal('ar-modal')">✕</button>
+    </div>
+    <div class="modal-body" style="text-align:center">
+      <div style="background:var(--void-3);border:1px solid var(--border-glow);border-radius:var(--radius-lg);padding:40px 24px;margin-bottom:20px">
+        <div style="font-size:64px;margin-bottom:16px">🪞</div>
+        <div style="font-size:17px;font-weight:800;color:var(--white);margin-bottom:8px">AR Try-On</div>
+        <div style="font-size:14px;color:var(--white-60);line-height:1.6;margin-bottom:20px">
+          Point your camera at yourself to virtually try on fashion items and see how electronics fit your setup. Powered by xAI vision.
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="zone-chip" onclick="showToast('AR Try-On: Ankara Dress — Loading…','🪞')">Ankara Dress</button>
+        <button class="zone-chip" onclick="showToast('AR Try-On: Yeezy 350 — Loading…','🪞')">Yeezy 350</button>
+        <button class="zone-chip" onclick="showToast('AR Try-On: MacBook Setup — Loading…','🪞')">MacBook Setup</button>
+        </div>
+      </div>
+      <button class="checkout-btn" onclick="showToast('Camera access required on device','📱')">📷 Open Camera</button>
+    </div>
+  </div>
+</div>
+
+<!-- Voice Search -->
+<div class="modal-overlay" id="voice-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🎙️ Voice Shopping</span>
+      <button class="modal-close" onclick="closeModal('voice-modal')">✕</button>
+    </div>
+    <div class="modal-body" style="text-align:center">
+      <div style="padding:32px 0">
+        <div id="voice-mic" style="width:100px;height:100px;border-radius:50%;background:var(--void-3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:44px;margin:0 auto 20px;cursor:pointer;transition:all 0.2s" onclick="toggleVoice(this)">🎙️</div>
+        <div id="voice-status" style="font-size:16px;font-weight:700;color:var(--white-60)">Tap to speak</div>
+        <div id="voice-result" style="font-size:14px;color:var(--white-40);margin-top:8px"></div>
+      </div>
+      <div style="text-align:left">
+        <div style="font-size:13px;font-weight:600;color:var(--white-60);margin-bottom:10px">Try saying:</div>
+        <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:8px;font-size:13px;color:var(--white-60);cursor:pointer" onclick="simulateVoice('Find me a cheap iPhone in Trans-Amadi')">&ldquo;Find me a cheap iPhone in Trans-Amadi&rdquo;</div>
+        <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:8px;font-size:13px;color:var(--white-60);cursor:pointer" onclick="simulateVoice('Show Ankara dresses under 10000 naira')">&ldquo;Show Ankara dresses under ₦10,000&rdquo;</div>
+        <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:8px;font-size:13px;color:var(--white-60);cursor:pointer" onclick="simulateVoice('Best deal on MacBook in Port Harcourt')">&ldquo;Best deal on MacBook in Port Harcourt&rdquo;</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reviews -->
+<div class="modal-overlay" id="reviews-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">⭐ Reviews</span>
+      <button class="modal-close" onclick="closeModal('reviews-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;padding:16px 0 20px;border-bottom:1px solid var(--border);margin-bottom:16px">
+        <div style="font-size:48px;font-weight:900;color:var(--white)">4.9</div>
+        <div style="font-size:20px;color:var(--gold);margin:4px 0">★★★★★</div>
+        <div style="font-size:13px;color:var(--white-40)">Based on 47 verified purchases</div>
+      </div>
+      <div style="padding:14px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--void-3);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--cyan)">C</div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--white);display:flex;align-items:center;gap:6px">Chioma Eze <span style="font-size:11px;background:var(--green-dim);color:var(--green);border:1px solid rgba(0,200,83,0.3);border-radius:6px;padding:1px 6px">✓ Verified Purchase</span></div>
+            <div style="font-size:12px;color:var(--gold)">★★★★★ · 2d ago</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--white-60);line-height:1.5">Excellent seller! iPhone was exactly as described. Escrow made me feel safe. Rider arrived in 20 minutes.</div>
+      </div>
+      <div style="padding:14px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--void-3);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--cyan)">T</div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--white);display:flex;align-items:center;gap:6px">Tunde Bakare <span style="font-size:11px;background:var(--green-dim);color:var(--green);border:1px solid rgba(0,200,83,0.3);border-radius:6px;padding:1px 6px">✓ Verified Purchase</span></div>
+            <div style="font-size:12px;color:var(--gold)">★★★★★ · 1w ago</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--white-60);line-height:1.5">Smooth transaction. Ankara dress quality is amazing. Will buy again.</div>
+      </div>
+      <div style="padding:14px 0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--void-3);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--cyan)">A</div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--white);display:flex;align-items:center;gap:6px">Adaeze Okonkwo <span style="font-size:11px;background:var(--green-dim);color:var(--green);border:1px solid rgba(0,200,83,0.3);border-radius:6px;padding:1px 6px">✓ Verified Purchase</span></div>
+            <div style="font-size:12px;color:var(--gold)">★★★★☆ · 2w ago</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--white-60);line-height:1.5">Good deal on the Yeezy. Authentic as promised. Slight delay in delivery but rider was professional.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chat -->
+<div class="modal-overlay" id="chat-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">💬 Messages</span>
+      <button class="modal-close" onclick="closeModal('chat-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="showToast('Opening chat with Emeka Nwosu','💬')">
+        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&fit=crop" alt="Emeka" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:700;color:var(--white)">Emeka Nwosu</div>
+          <div style="font-size:13px;color:var(--white-40);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Escrow is always on for my listings.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <div style="font-size:11px;color:var(--white-40)">10:37 AM</div>
+          <div style="width:18px;height:18px;background:var(--cyan);border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--void)">1</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer" onclick="showToast('Opening chat with Adaeze Okonkwo','💬')">
+        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&fit=crop" alt="Adaeze" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:700;color:var(--white)">Adaeze Okonkwo</div>
+          <div style="font-size:13px;color:var(--white-40);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Yes, rider delivery available. ₦1,500 extra.</div>
+        </div>
+        <div style="font-size:11px;color:var(--white-40)">Yesterday</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Orders -->
+<div class="modal-overlay" id="orders-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📦 Orders</span>
+      <button class="modal-close" onclick="closeModal('orders-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="font-size:14px;font-weight:700;color:var(--white)">iPhone 14 Pro 256GB</div>
+          <span style="background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--border-glow);border-radius:8px;padding:3px 10px;font-size:12px;font-weight:600">In Transit</span>
+        </div>
+        <div style="font-size:13px;color:var(--white-40);margin-bottom:10px">Order #ORD-20240315-001 · ₦420,000</div>
+        <div style="display:flex;gap:8px">
+          <button class="detail-btn detail-btn-secondary" style="flex:1;padding:8px" onclick="showToast('Opening rider tracking…','🏍️')">🏍️ Track Rider</button>
+          <button class="detail-btn detail-btn-primary" style="flex:1;padding:8px" onclick="showToast('Delivery confirmed! Escrow released to seller.','🔒')">✓ Confirm Delivery</button>
+        </div>
+      </div>
+      <div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="font-size:14px;font-weight:700;color:var(--white)">Vintage Ankara Dress</div>
+          <span style="background:var(--green-dim);color:var(--green);border:1px solid rgba(0,200,83,0.3);border-radius:8px;padding:3px 10px;font-size:12px;font-weight:600">Completed</span>
+        </div>
+        <div style="font-size:13px;color:var(--white-40)">Order #ORD-20240310-002 · ₦8,500 · Escrow Released</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+// Render Reels modal
+function renderReelsModal() {
+  const body = document.getElementById('reels-modal-body');
+  if (!body) return;
+  const reels = [
+    { seller: 'Adaeze Okonkwo', item: 'Vintage Ankara Dress', price: '\u20a68,500', img: 'https://images.unsplash.com/photo-1594938298603-c8148c4b4e5d?w=600&fit=crop', views: '12.4K', cartId: 'l1' },
+    { seller: 'Emeka Nwosu', item: 'iPhone 14 Pro', price: '\u20a6420,000', img: 'https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=600&fit=crop', views: '34.2K', cartId: 'l2' },
+    { seller: 'Tunde Bakare', item: 'Toyota Camry 2015', price: '\u20a68.2M', img: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=600&fit=crop', views: '89.1K', cartId: 'l4' },
+  ];
+  body.innerHTML = '<div style="display:flex;flex-direction:column;gap:16px">' + reels.map(r =>
+    '<div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">'
+    + '<div style="position:relative">'
+    + '<img src="' + r.img + '" alt="' + r.item + '" style="width:100%;height:200px;object-fit:cover">'
+    + '<div style="position:absolute;top:10px;left:10px;background:rgba(0,0,0,0.7);border-radius:8px;padding:4px 10px;font-size:12px;color:var(--white)">&blacktriangleright; ' + r.views + ' views</div>'
+    + '<div style="position:absolute;bottom:10px;right:10px;background:var(--cyan);border-radius:8px;padding:6px 14px;font-size:13px;font-weight:700;color:var(--void);cursor:pointer" onclick="addToCart(\'' + r.cartId + '\');showToast(\'Added to cart\',\'\ud83d\uded2\')">Buy Now</div>'
+    + '</div>'
+    + '<div style="padding:12px 14px;display:flex;justify-content:space-between;align-items:center">'
+    + '<div><div style="font-size:14px;font-weight:700;color:var(--white)">' + r.item + '</div><div style="font-size:12px;color:var(--white-40)">' + r.seller + '</div></div>'
+    + '<div style="font-size:16px;font-weight:900;color:var(--cyan)">' + r.price + '</div>'
+    + '</div></div>'
+  ).join('') + '</div>';
+}
+
+// Render Groups modal
+function renderGroupsModal() {
+  const body = document.getElementById('groups-modal-body');
+  if (!body) return;
+  const groups = [
+    { name: 'PH Tech Deals', desc: 'Electronics buyers & sellers in Port Harcourt', members: '4.2K', icon: '\ud83d\udcbb' },
+    { name: 'GRA Fashion Hub', desc: 'Premium fashion in GRA Phase 1 & 2', members: '2.8K', icon: '\ud83d\udc57' },
+    { name: 'Trans-Amadi Auto', desc: 'Vehicles and auto parts \u2014 Trans-Amadi', members: '1.9K', icon: '\ud83d\ude97' },
+    { name: 'D/Line Home & Living', desc: 'Furniture and home decor deals', members: '1.1K', icon: '\ud83d\udecb\ufe0f' },
+    { name: 'UniPort Student Market', desc: 'Affordable deals for Choba / UniPort', members: '3.4K', icon: '\ud83c\udf93' },
+  ];
+  body.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px">' + groups.map(g =>
+    '<div style="background:var(--void-3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;align-items:center;gap:12px">'
+    + '<div style="width:48px;height:48px;border-radius:14px;background:var(--void-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">' + g.icon + '</div>'
+    + '<div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--white)">' + g.name + '</div><div style="font-size:12px;color:var(--white-40)">' + g.desc + '</div><div style="font-size:12px;color:var(--cyan);margin-top:2px">' + g.members + ' members</div></div>'
+    + '<button class="follow-btn" onclick="this.textContent=this.textContent===\'Join\'?\'Joined\':\'Join\';showToast(\'Joined ' + g.name + '\',\'\ud83d\udc65\')">Join</button>'
+    + '</div>'
+  ).join('') + '</div>';
+}
+
+// Who to Follow widget
+document.addEventListener('DOMContentLoaded', () => {
+  const wtf = document.getElementById('who-to-follow');
+  if (wtf) {
+    wtf.innerHTML = MOCK_USERS.map(u => `
+      <div class="trending-item">
+        <img class="trending-avatar" src="${u.avatar}" alt="${u.name}" loading="lazy">
+        <div>
+          <div class="trending-name" style="display:flex;align-items:center;gap:4px">
+            ${u.name}
+            ${u.isVerified ? '<span class="verified-badge" style="width:14px;height:14px;font-size:8px">✓</span>' : ''}
+          </div>
+          <div class="trending-meta">${u.handle} · ${u.sales} sales</div>
+        </div>
+        <button class="follow-btn ${u.isFollowing ? 'following' : ''}" onclick="toggleFollow(this, '${u.id}')">
+          ${u.isFollowing ? 'Following' : 'Follow'}
+        </button>
+      </div>`).join('');
+  }
+
+  // Explore cat bar
+  renderCatBar('cat-bar-explore');
+});
+
+// Voice search simulation
+let voiceActive = false;
+function toggleVoice(el) {
+  voiceActive = !voiceActive;
+  if (voiceActive) {
+    el.style.background = 'var(--red-dim)';
+    el.style.borderColor = 'var(--red)';
+    el.style.animation = 'pulse 0.8s infinite';
+    document.getElementById('voice-status').textContent = 'Listening…';
+    document.getElementById('voice-status').style.color = 'var(--red)';
+    setTimeout(() => {
+      voiceActive = false;
+      el.style.background = 'var(--void-3)';
+      el.style.borderColor = 'var(--border)';
+      el.style.animation = '';
+      document.getElementById('voice-status').textContent = 'Tap to speak';
+      document.getElementById('voice-status').style.color = 'var(--white-60)';
+      document.getElementById('voice-result').textContent = '';
+    }, 3000);
+  }
+}
+
+function simulateVoice(query) {
+  document.getElementById('voice-status').textContent = 'Searching…';
+  document.getElementById('voice-status').style.color = 'var(--cyan)';
+  document.getElementById('voice-result').textContent = query;
+  setTimeout(() => {
+    closeModal('voice-modal');
+    AppState.searchQuery = query.replace(/['"]/g, '').replace(/find me a |show |best deal on /gi, '').split(' ')[0];
+    renderFeed();
+    navigate('feed');
+    showToast('Voice search: ' + query, '🎙️');
+    AppState.searchQuery = '';
+  }, 1200);
+}
+</script>
+
+</body>
+</html>
